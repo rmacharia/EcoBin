@@ -1,0 +1,1153 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Community - EcoBin</title>
+    <meta name="description" content="Join environmental challenges, connect with eco-conscious community members, and participate in local sustainability initiatives.">
+    
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Tiempos+Headline:wght@400;500;700&family=Suisse+Int'l:wght@300;400;500;600&display=swap" rel="stylesheet">
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Core Libraries -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/echarts/5.4.0/echarts.min.js"></script>
+    
+    <style>
+        :root {
+            --color-primary: #2D5A3D;
+            --color-secondary: #8B6914;
+            --color-background: #FFFFFF;
+            --color-text: #3A3A3A;
+            --color-accent: #6B8CAE;
+            --color-success: #4A6741;
+            --color-warning: #B8860B;
+            --color-error: #8B4513;
+            --font-primary: 'Tiempos Headline', serif;
+            --font-secondary: 'Suisse Int\'l', sans-serif;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: var(--font-secondary);
+            background-color: var(--color-background);
+            color: var(--color-text);
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        .font-primary {
+            font-family: var(--font-primary);
+        }
+
+        .text-primary {
+            color: var(--color-primary);
+        }
+
+        .bg-primary {
+            background-color: var(--color-primary);
+        }
+
+        .text-secondary {
+            color: var(--color-secondary);
+        }
+
+        .bg-secondary {
+            background-color: var(--color-secondary);
+        }
+
+        /* Navigation */
+        .navbar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            z-index: 1000;
+            padding: 1rem 0;
+            border-bottom: 1px solid rgba(45, 90, 61, 0.1);
+        }
+
+        .nav-link {
+            position: relative;
+            transition: all 0.3s ease;
+        }
+
+        .nav-link:hover {
+            color: var(--color-primary);
+        }
+
+        .nav-link.active::after {
+            content: '';
+            position: absolute;
+            bottom: -4px;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: var(--color-primary);
+        }
+
+        /* Main Content */
+        .main-content {
+            padding-top: 80px;
+            min-height: 100vh;
+            padding-bottom: 5rem;
+        }
+
+        /* Community Header */
+        .community-header {
+            background: linear-gradient(135deg, rgba(45, 90, 61, 0.1), rgba(139, 105, 20, 0.1));
+            border-radius: 12px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            text-align: center;
+        }
+
+        /* Leaderboard */
+        .leaderboard {
+            background: white;
+            border-radius: 12px;
+            padding: 2rem;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            border: 1px solid rgba(45, 90, 61, 0.1);
+            margin-bottom: 2rem;
+        }
+
+        .leaderboard-item {
+            display: flex;
+            align-items: center;
+            padding: 1rem;
+            border-bottom: 1px solid rgba(45, 90, 61, 0.1);
+            transition: all 0.3s ease;
+        }
+
+        .leaderboard-item:hover {
+            background: rgba(45, 90, 61, 0.05);
+        }
+
+        .leaderboard-item:last-child {
+            border-bottom: none;
+        }
+
+        .leaderboard-rank {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            margin-right: 1rem;
+        }
+
+        .leaderboard-rank.gold {
+            background: linear-gradient(135deg, #FFD700, #FFA500);
+            color: white;
+        }
+
+        .leaderboard-rank.silver {
+            background: linear-gradient(135deg, #C0C0C0, #A9A9A9);
+            color: white;
+        }
+
+        .leaderboard-rank.bronze {
+            background: linear-gradient(135deg, #CD7F32, #B8860B);
+            color: white;
+        }
+
+        .leaderboard-rank.other {
+            background: rgba(45, 90, 61, 0.1);
+            color: var(--color-primary);
+        }
+
+        .leaderboard-user {
+            flex: 1;
+        }
+
+        .leaderboard-name {
+            font-weight: 600;
+            color: var(--color-primary);
+        }
+
+        .leaderboard-stats {
+            font-size: 0.875rem;
+            opacity: 0.7;
+        }
+
+        .leaderboard-score {
+            text-align: right;
+        }
+
+        .leaderboard-points {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--color-primary);
+        }
+
+        .leaderboard-streak {
+            font-size: 0.75rem;
+            opacity: 0.6;
+        }
+
+        /* Challenges */
+        .challenges {
+            background: white;
+            border-radius: 12px;
+            padding: 2rem;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            border: 1px solid rgba(45, 90, 61, 0.1);
+            margin-bottom: 2rem;
+        }
+
+        .challenge-card {
+            background: rgba(45, 90, 61, 0.05);
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-bottom: 1rem;
+            border: 1px solid rgba(45, 90, 61, 0.1);
+            transition: all 0.3s ease;
+        }
+
+        .challenge-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+        }
+
+        .challenge-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: start;
+            margin-bottom: 1rem;
+        }
+
+        .challenge-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: var(--color-primary);
+        }
+
+        .challenge-badge {
+            padding: 0.25rem 0.75rem;
+            border-radius: 16px;
+            font-size: 0.75rem;
+            font-weight: 500;
+        }
+
+        .challenge-badge.active {
+            background: var(--color-success);
+            color: white;
+        }
+
+        .challenge-badge.upcoming {
+            background: var(--color-warning);
+            color: white;
+        }
+
+        .challenge-badge.completed {
+            background: var(--color-accent);
+            color: white;
+        }
+
+        .challenge-description {
+            opacity: 0.8;
+            margin-bottom: 1rem;
+        }
+
+        .challenge-stats {
+            display: flex;
+            gap: 2rem;
+            margin-bottom: 1rem;
+        }
+
+        .challenge-stat {
+            text-align: center;
+        }
+
+        .challenge-stat-number {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--color-primary);
+        }
+
+        .challenge-stat-label {
+            font-size: 0.75rem;
+            opacity: 0.6;
+        }
+
+        .challenge-progress {
+            margin-bottom: 1rem;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background: rgba(45, 90, 61, 0.1);
+            border-radius: 4px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--color-primary), var(--color-secondary));
+            border-radius: 4px;
+            transition: width 0.3s ease;
+        }
+
+        .challenge-actions {
+            display: flex;
+            gap: 1rem;
+        }
+
+        /* Events */
+        .events {
+            background: white;
+            border-radius: 12px;
+            padding: 2rem;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            border: 1px solid rgba(45, 90, 61, 0.1);
+            margin-bottom: 2rem;
+        }
+
+        .event-card {
+            display: flex;
+            gap: 1rem;
+            padding: 1.5rem;
+            border-bottom: 1px solid rgba(45, 90, 61, 0.1);
+            transition: all 0.3s ease;
+        }
+
+        .event-card:hover {
+            background: rgba(45, 90, 61, 0.05);
+        }
+
+        .event-card:last-child {
+            border-bottom: none;
+        }
+
+        .event-date {
+            background: var(--color-primary);
+            color: white;
+            border-radius: 8px;
+            padding: 1rem;
+            text-align: center;
+            min-width: 80px;
+        }
+
+        .event-day {
+            font-size: 1.5rem;
+            font-weight: 700;
+        }
+
+        .event-month {
+            font-size: 0.875rem;
+            opacity: 0.8;
+        }
+
+        .event-content {
+            flex: 1;
+        }
+
+        .event-title {
+            font-weight: 600;
+            color: var(--color-primary);
+            margin-bottom: 0.5rem;
+        }
+
+        .event-location {
+            font-size: 0.875rem;
+            opacity: 0.7;
+            margin-bottom: 0.5rem;
+        }
+
+        .event-description {
+            font-size: 0.875rem;
+            opacity: 0.8;
+            margin-bottom: 1rem;
+        }
+
+        .event-participants {
+            font-size: 0.75rem;
+            opacity: 0.6;
+            margin-bottom: 1rem;
+        }
+
+        /* Educational Content */
+        .education {
+            background: white;
+            border-radius: 12px;
+            padding: 2rem;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            border: 1px solid rgba(45, 90, 61, 0.1);
+            margin-bottom: 2rem;
+        }
+
+        .education-item {
+            display: flex;
+            gap: 1rem;
+            padding: 1.5rem;
+            border-bottom: 1px solid rgba(45, 90, 61, 0.1);
+            transition: all 0.3s ease;
+        }
+
+        .education-item:hover {
+            background: rgba(45, 90, 61, 0.05);
+        }
+
+        .education-item:last-child {
+            border-bottom: none;
+        }
+
+        .education-icon {
+            font-size: 2rem;
+            flex-shrink: 0;
+        }
+
+        .education-content {
+            flex: 1;
+        }
+
+        .education-title {
+            font-weight: 600;
+            color: var(--color-primary);
+            margin-bottom: 0.5rem;
+        }
+
+        .education-description {
+            opacity: 0.8;
+            margin-bottom: 1rem;
+        }
+
+        .education-meta {
+            display: flex;
+            gap: 1rem;
+            font-size: 0.875rem;
+            opacity: 0.6;
+        }
+
+        /* Buttons */
+        .btn-primary {
+            background: var(--color-primary);
+            color: white;
+            padding: 0.75rem 1.5rem;
+            border-radius: 8px;
+            border: none;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .btn-primary:hover {
+            background: var(--color-secondary);
+            transform: translateY(-2px);
+        }
+
+        .btn-secondary {
+            background: transparent;
+            color: var(--color-primary);
+            padding: 0.75rem 1.5rem;
+            border-radius: 8px;
+            border: 2px solid var(--color-primary);
+            font-weight: 500;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .btn-secondary:hover {
+            background: var(--color-primary);
+            color: white;
+        }
+
+        .btn-outline {
+            background: transparent;
+            color: var(--color-primary);
+            padding: 0.5rem 1rem;
+            border-radius: 6px;
+            border: 1px solid var(--color-primary);
+            font-size: 0.875rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .btn-outline:hover {
+            background: var(--color-primary);
+            color: white;
+        }
+
+        /* Bottom Navigation */
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: white;
+            border-top: 1px solid rgba(45, 90, 61, 0.1);
+            padding: 0.5rem 0;
+            z-index: 1000;
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+        }
+
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 0.5rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            color: var(--color-text);
+        }
+
+        .nav-item:hover {
+            color: var(--color-primary);
+        }
+
+        .nav-item.active {
+            color: var(--color-primary);
+        }
+
+        .nav-icon {
+            font-size: 1.25rem;
+            margin-bottom: 0.25rem;
+        }
+
+        .nav-label {
+            font-size: 0.75rem;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .challenge-stats {
+                flex-direction: column;
+                gap: 1rem;
+            }
+            
+            .challenge-actions {
+                flex-direction: column;
+            }
+            
+            .event-card {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="max-w-6xl mx-auto px-4 flex items-center justify-between">
+            <div class="font-primary text-2xl font-bold text-primary">
+                EcoBin
+            </div>
+            
+            <div class="hidden md:flex items-center space-x-8">
+                <a href="index.html" class="nav-link" data-nav="index">Dashboard</a>
+                <a href="track.html" class="nav-link" data-nav="track">Track Waste</a>
+                <a href="insights.html" class="nav-link" data-nav="insights">Insights</a>
+                <a href="#" class="nav-link active" data-nav="community">Community</a>
+            </div>
+            
+            <div class="flex items-center space-x-4">
+                <div class="connection-status online text-sm">
+                    Online
+                </div>
+                <button class="btn-primary" onclick="window.communityHub?.shareAchievement()">
+                    📤 Share
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <div class="max-w-6xl mx-auto px-4 py-8">
+            <!-- Community Header -->
+            <div class="community-header">
+                <h1 class="font-primary text-4xl font-bold text-primary mb-4">
+                    Environmental Community
+                </h1>
+                <p class="text-xl opacity-80">
+                    Connect with like-minded individuals, participate in challenges, and make a collective impact on our environment.
+                </p>
+            </div>
+
+            <!-- Community Stats -->
+            <div class="grid md:grid-cols-4 gap-6 mb-8">
+                <div class="text-center">
+                    <div class="text-3xl font-bold text-primary mb-2">1,247</div>
+                    <div class="text-sm opacity-80">Community Members</div>
+                </div>
+                <div class="text-center">
+                    <div class="text-3xl font-bold text-success mb-2">2.4 tons</div>
+                    <div class="text-sm opacity-80">Waste Diverted</div>
+                </div>
+                <div class="text-center">
+                    <div class="text-3xl font-bold text-accent mb-2">1.8 tons</div>
+                    <div class="text-sm opacity-80">CO₂ Saved</div>
+                </div>
+                <div class="text-center">
+                    <div class="text-3xl font-bold text-secondary mb-2">82</div>
+                    <div class="text-sm opacity-80">Trees Equivalent</div>
+                </div>
+            </div>
+
+            <!-- Leaderboard -->
+            <div class="leaderboard">
+                <h2 class="font-primary text-2xl font-bold text-primary mb-4">
+                    🏆 Community Leaderboard
+                </h2>
+                <p class="opacity-80 mb-6">
+                    See who's leading our community in environmental impact and waste reduction efforts.
+                </p>
+
+                <div class="leaderboard-item">
+                    <div class="leaderboard-rank gold">1</div>
+                    <div class="leaderboard-user">
+                        <div class="leaderboard-name">Sarah M.</div>
+                        <div class="leaderboard-stats">45kg waste diverted • 15 day streak</div>
+                    </div>
+                    <div class="leaderboard-score">
+                        <div class="leaderboard-points">2,450</div>
+                        <div class="leaderboard-streak">🔥 15 days</div>
+                    </div>
+                </div>
+
+                <div class="leaderboard-item">
+                    <div class="leaderboard-rank silver">2</div>
+                    <div class="leaderboard-user">
+                        <div class="leaderboard-name">John K.</div>
+                        <div class="leaderboard-stats">42kg waste diverted • 12 day streak</div>
+                    </div>
+                    <div class="leaderboard-score">
+                        <div class="leaderboard-points">2,380</div>
+                        <div class="leaderboard-streak">🔥 12 days</div>
+                    </div>
+                </div>
+
+                <div class="leaderboard-item">
+                    <div class="leaderboard-rank bronze">3</div>
+                    <div class="leaderboard-user">
+                        <div class="leaderboard-name">Amina L.</div>
+                        <div class="leaderboard-stats">38kg waste diverted • 18 day streak</div>
+                    </div>
+                    <div class="leaderboard-score">
+                        <div class="leaderboard-points">2,290</div>
+                        <div class="leaderboard-streak">🔥 18 days</div>
+                    </div>
+                </div>
+
+                <div class="leaderboard-item">
+                    <div class="leaderboard-rank other">4</div>
+                    <div class="leaderboard-user">
+                        <div class="leaderboard-name">David R.</div>
+                        <div class="leaderboard-stats">35kg waste diverted • 8 day streak</div>
+                    </div>
+                    <div class="leaderboard-score">
+                        <div class="leaderboard-points">2,150</div>
+                        <div class="leaderboard-streak">🔥 8 days</div>
+                    </div>
+                </div>
+
+                <div class="leaderboard-item">
+                    <div class="leaderboard-rank other">5</div>
+                    <div class="leaderboard-user">
+                        <div class="leaderboard-name">Grace W.</div>
+                        <div class="leaderboard-stats">33kg waste diverted • 21 day streak</div>
+                    </div>
+                    <div class="leaderboard-score">
+                        <div class="leaderboard-points">2,080</div>
+                        <div class="leaderboard-streak">🔥 21 days</div>
+                    </div>
+                </div>
+
+                <div class="leaderboard-item">
+                    <div class="leaderboard-rank other">42</div>
+                    <div class="leaderboard-user">
+                        <div class="leaderboard-name">You</div>
+                        <div class="leaderboard-stats">28kg waste diverted • 7 day streak</div>
+                    </div>
+                    <div class="leaderboard-score">
+                        <div class="leaderboard-points">1,890</div>
+                        <div class="leaderboard-streak">🔥 7 days</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Active Challenges -->
+            <div class="challenges">
+                <h2 class="font-primary text-2xl font-bold text-primary mb-4">
+                    🎯 Environmental Challenges
+                </h2>
+                <p class="opacity-80 mb-6">
+                    Join community challenges to reduce waste together and earn bonus points.
+                </p>
+
+                <div class="challenge-card">
+                    <div class="challenge-header">
+                        <div class="challenge-title">Plastic-Free Week</div>
+                        <div class="challenge-badge active">Active</div>
+                    </div>
+                    <div class="challenge-description">
+                        Avoid single-use plastics for one week. Choose reusable alternatives and track your progress with the community.
+                    </div>
+                    <div class="challenge-stats">
+                        <div class="challenge-stat">
+                            <div class="challenge-stat-number">156</div>
+                            <div class="challenge-stat-label">Participants</div>
+                        </div>
+                        <div class="challenge-stat">
+                            <div class="challenge-stat-number">234kg</div>
+                            <div class="challenge-stat-label">Plastic Avoided</div>
+                        </div>
+                        <div class="challenge-stat">
+                            <div class="challenge-stat-number">3</div>
+                            <div class="challenge-stat-label">Days Left</div>
+                        </div>
+                    </div>
+                    <div class="challenge-progress">
+                        <div class="progress-bar">
+                            <div class="progress-fill" style="width: 75%;"></div>
+                        </div>
+                        <div class="text-sm opacity-60 mt-1">Your progress: 75% complete</div>
+                    </div>
+                    <div class="challenge-actions">
+                        <button class="btn-primary" onclick="window.communityHub?.viewChallenge('plastic-free-week')">
+                            View Progress
+                        </button>
+                        <button class="btn-secondary" onclick="window.communityHub?.shareChallenge('plastic-free-week')">
+                            Share Challenge
+                        </button>
+                    </div>
+                </div>
+
+                <div class="challenge-card">
+                    <div class="challenge-header">
+                        <div class="challenge-title">Zero Waste Month</div>
+                        <div class="challenge-badge upcoming">Upcoming</div>
+                    </div>
+                    <div class="challenge-description">
+                        Minimize waste generation for 30 days. Focus on reduction, reuse, and proper recycling of all materials.
+                    </div>
+                    <div class="challenge-stats">
+                        <div class="challenge-stat">
+                            <div class="challenge-stat-number">89</div>
+                            <div class="challenge-stat-label">Registered</div>
+                        </div>
+                        <div class="challenge-stat">
+                            <div class="challenge-stat-number">445kg</div>
+                            <div class="challenge-stat-label">Target Reduction</div>
+                        </div>
+                        <div class="challenge-stat">
+                            <div class="challenge-stat-number">5</div>
+                            <div class="challenge-stat-label">Days to Start</div>
+                        </div>
+                    </div>
+                    <div class="challenge-actions">
+                        <button class="btn-primary" onclick="window.communityHub?.joinChallenge('zero-waste-month')">
+                            Join Challenge
+                        </button>
+                        <button class="btn-secondary" onclick="window.communityHub?.setReminder('zero-waste-month')">
+                            Set Reminder
+                        </button>
+                    </div>
+                </div>
+
+                <div class="challenge-card">
+                    <div class="challenge-header">
+                        <div class="challenge-title">Community Cleanup Day</div>
+                        <div class="challenge-badge completed">Completed</div>
+                    </div>
+                    <div class="challenge-description">
+                        Join local volunteers for a community park cleanup. Remove litter and properly sort waste for recycling.
+                    </div>
+                    <div class="challenge-stats">
+                        <div class="challenge-stat">
+                            <div class="challenge-stat-number">124</div>
+                            <div class="challenge-stat-label">Participants</div>
+                        </div>
+                        <div class="challenge-stat">
+                            <div class="challenge-stat-number">156kg</div>
+                            <div class="challenge-stat-label">Waste Collected</div>
+                        </div>
+                        <div class="challenge-stat">
+                            <div class="challenge-stat-number">89%</div>
+                            <div class="challenge-stat-label">Recycled</div>
+                        </div>
+                    </div>
+                    <div class="challenge-actions">
+                        <button class="btn-outline" onclick="window.communityHub?.viewResults('cleanup-day')">
+                            View Results
+                        </button>
+                        <button class="btn-outline" onclick="window.communityHub?.viewPhotos('cleanup-day')">
+                            View Photos
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Local Events -->
+            <div class="events">
+                <h2 class="font-primary text-2xl font-bold text-primary mb-4">
+                    📅 Local Environmental Events
+                </h2>
+                <p class="opacity-80 mb-6">
+                    Join local events and meet other community members passionate about environmental sustainability.
+                </p>
+
+                <div class="event-card">
+                    <div class="event-date">
+                        <div class="event-day">15</div>
+                        <div class="event-month">NOV</div>
+                    </div>
+                    <div class="event-content">
+                        <div class="event-title">Community Park Cleanup</div>
+                        <div class="event-location">📍 Central Park, Nairobi</div>
+                        <div class="event-description">
+                            Join us for a community cleanup event at Central Park. We'll provide all necessary equipment and refreshments. 
+                            Help keep our green spaces clean and beautiful for everyone to enjoy.
+                        </div>
+                        <div class="event-participants">👥 45 participants registered</div>
+                        <div class="challenge-actions">
+                            <button class="btn-primary" onclick="window.communityHub?.registerEvent('park-cleanup-2024-11-15')">
+                                Register Now
+                            </button>
+                            <button class="btn-secondary" onclick="window.communityHub?.shareEvent('park-cleanup-2024-11-15')">
+                                Share Event
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="event-card">
+                    <div class="event-date">
+                        <div class="event-day">20</div>
+                        <div class="event-month">NOV</div>
+                    </div>
+                    <div class="event-content">
+                        <div class="event-title">Electronic Waste Recycling Drive</div>
+                        <div class="event-location">📍 City Hall, Nairobi</div>
+                        <div class="event-description">
+                            Safely dispose of your electronic waste including old phones, computers, batteries, and appliances. 
+                            Certified recycling partners will ensure proper handling and data destruction.
+                        </div>
+                        <div class="event-participants">👥 120 participants registered</div>
+                        <div class="challenge-actions">
+                            <button class="btn-primary" onclick="window.communityHub?.registerEvent('e-waste-drive-2024-11-20')">
+                                Register Now
+                            </button>
+                            <button class="btn-secondary" onclick="window.communityHub?.addToCalendar('e-waste-drive-2024-11-20')">
+                                Add to Calendar
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="event-card">
+                    <div class="event-date">
+                        <div class="event-day">25</div>
+                        <div class="event-month">NOV</div>
+                    </div>
+                    <div class="event-content">
+                        <div class="event-title">Sustainable Living Workshop</div>
+                        <div class="event-location">📍 Community Center, Nairobi</div>
+                        <div class="event-description">
+                            Learn practical skills for sustainable living including composting, zero-waste practices, 
+                            and energy conservation. Interactive workshops with expert instructors.
+                        </div>
+                        <div class="event-participants">👥 78 participants registered</div>
+                        <div class="challenge-actions">
+                            <button class="btn-primary" onclick="window.communityHub?.registerEvent('sustainability-workshop-2024-11-25')">
+                                Register Now
+                            </button>
+                            <button class="btn-secondary" onclick="window.communityHub?.learnMore('sustainability-workshop-2024-11-25')">
+                                Learn More
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Educational Resources -->
+            <div class="education">
+                <h2 class="font-primary text-2xl font-bold text-primary mb-4">
+                    📚 Environmental Education
+                </h2>
+                <p class="opacity-80 mb-6">
+                    Learn about waste management, recycling, and sustainable living practices.
+                </p>
+
+                <div class="education-item">
+                    <div class="education-icon">🔄</div>
+                    <div class="education-content">
+                        <div class="education-title">The Journey of Plastic Recycling</div>
+                        <div class="education-description">
+                            Learn how plastic waste is transformed into new products through the recycling process. 
+                            Understand the different types of plastics and their recycling potential.
+                        </div>
+                        <div class="education-meta">
+                            <span>📖 Article</span>
+                            <span>⏱️ 5 min read</span>
+                            <span>👁️ 1,234 views</span>
+                        </div>
+                        <div class="challenge-actions">
+                            <button class="btn-outline" onclick="window.communityHub?.readArticle('plastic-recycling-journey')">
+                                Read Article
+                            </button>
+                            <button class="btn-outline" onclick="window.communityHub?.saveForLater('plastic-recycling-journey')">
+                                Save for Later
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="education-item">
+                    <div class="education-icon">🌱</div>
+                    <div class="education-content">
+                        <div class="education-title">Composting Basics for Beginners</div>
+                        <div class="education-description">
+                            Start composting at home with these simple steps and reduce your organic waste. 
+                            Learn what can and cannot be composted, and how to maintain a healthy compost system.
+                        </div>
+                        <div class="education-meta">
+                            <span>📚 Guide</span>
+                            <span>⏱️ 8 min read</span>
+                            <span>👁️ 892 views</span>
+                        </div>
+                        <div class="challenge-actions">
+                            <button class="btn-outline" onclick="window.communityHub?.readArticle('composting-basics')">
+                                Read Guide
+                            </button>
+                            <button class="btn-outline" onclick="window.communityHub?.downloadGuide('composting-basics')">
+                                Download PDF
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="education-item">
+                    <div class="education-icon">🌍</div>
+                    <div class="education-content">
+                        <div class="education-title">Understanding Carbon Footprint</div>
+                        <div class="education-description">
+                            How your waste management choices impact the environment and climate change. 
+                            Learn to calculate and reduce your personal carbon footprint through better waste practices.
+                        </div>
+                        <div class="education-meta">
+                            <span>🎓 Educational</span>
+                            <span>⏱️ 6 min read</span>
+                            <span>👁️ 567 views</span>
+                        </div>
+                        <div class="challenge-actions">
+                            <button class="btn-outline" onclick="window.communityHub?.readArticle('carbon-footprint')">
+                                Read Article
+                            </button>
+                            <button class="btn-outline" onclick="window.communityHub?.takeQuiz('carbon-footprint')">
+                                Take Quiz
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bottom Navigation -->
+    <nav class="bottom-nav">
+        <a href="index.html" class="nav-item">
+            <div class="nav-icon">🏠</div>
+            <div class="nav-label">Dashboard</div>
+        </a>
+        <a href="track.html" class="nav-item">
+            <div class="nav-icon">📝</div>
+            <div class="nav-label">Track</div>
+        </a>
+        <a href="insights.html" class="nav-item">
+            <div class="nav-icon">📊</div>
+            <div class="nav-label">Insights</div>
+        </a>
+        <a href="#" class="nav-item active">
+            <div class="nav-icon">🌍</div>
+            <div class="nav-label">Community</div>
+        </a>
+    </nav>
+
+    <!-- Load Main Application -->
+    <script src="app.js"></script>
+    
+    <script>
+        class CommunityHub {
+            constructor() {
+                this.init();
+            }
+
+            init() {
+                this.setupEventListeners();
+                this.loadCommunityData();
+            }
+
+            setupEventListeners() {
+                // Add any global event listeners here
+            }
+
+            async loadCommunityData() {
+                try {
+                    // Simulate loading community data
+                    await new Promise(resolve => setTimeout(resolve, 500));
+                    
+                    // Update community stats
+                    this.updateCommunityStats();
+                    
+                    this.showNotification('Community data loaded', 'success');
+                } catch (error) {
+                    console.error('Failed to load community data:', error);
+                    this.showNotification('Failed to load community data', 'error');
+                }
+            }
+
+            updateCommunityStats() {
+                // This would update the community statistics with real data
+                console.log('Community stats updated');
+            }
+
+            // Challenge actions
+            joinChallenge(challengeId) {
+                this.showNotification(`Joining ${challengeId} challenge...`, 'info');
+                
+                // Simulate joining challenge
+                setTimeout(() => {
+                    this.showNotification(`Successfully joined ${challengeId}!`, 'success');
+                }, 1000);
+            }
+
+            viewChallenge(challengeId) {
+                this.showNotification(`Loading ${challengeId} details...`, 'info');
+                // This would open a detailed view of the challenge
+            }
+
+            shareChallenge(challengeId) {
+                this.showNotification(`Sharing ${challengeId} challenge...`, 'info');
+                
+                // Simulate sharing
+                setTimeout(() => {
+                    this.showNotification('Challenge shared successfully!', 'success');
+                }, 1000);
+            }
+
+            setReminder(challengeId) {
+                this.showNotification(`Reminder set for ${challengeId}`, 'success');
+            }
+
+            viewResults(challengeId) {
+                this.showNotification(`Loading ${challengeId} results...`, 'info');
+            }
+
+            viewPhotos(challengeId) {
+                this.showNotification(`Loading ${challengeId} photos...`, 'info');
+            }
+
+            // Event actions
+            registerEvent(eventId) {
+                this.showNotification(`Registering for ${eventId}...`, 'info');
+                
+                setTimeout(() => {
+                    this.showNotification('Successfully registered for event!', 'success');
+                }, 1000);
+            }
+
+            shareEvent(eventId) {
+                this.showNotification(`Sharing ${eventId}...`, 'info');
+                
+                setTimeout(() => {
+                    this.showNotification('Event shared successfully!', 'success');
+                }, 1000);
+            }
+
+            addToCalendar(eventId) {
+                this.showNotification('Adding event to calendar...', 'info');
+                
+                setTimeout(() => {
+                    this.showNotification('Event added to calendar!', 'success');
+                }, 1000);
+            }
+
+            learnMore(eventId) {
+                this.showNotification('Loading event details...', 'info');
+            }
+
+            // Education actions
+            readArticle(articleId) {
+                this.showNotification(`Loading ${articleId}...`, 'info');
+            }
+
+            saveForLater(articleId) {
+                this.showNotification('Article saved for later', 'success');
+            }
+
+            downloadGuide(guideId) {
+                this.showNotification('Downloading guide...', 'info');
+                
+                setTimeout(() => {
+                    this.showNotification('Guide downloaded successfully!', 'success');
+                }, 1500);
+            }
+
+            takeQuiz(quizId) {
+                this.showNotification('Starting quiz...', 'info');
+            }
+
+            // Social actions
+            shareAchievement() {
+                this.showNotification('Preparing achievement to share...', 'info');
+                
+                setTimeout(() => {
+                    this.showNotification('Achievement shared on social media!', 'success');
+                }, 1000);
+            }
+
+            showNotification(message, type = 'info') {
+                const notification = document.createElement('div');
+                notification.style.cssText = `
+                    position: fixed;
+                    top: 100px;
+                    right: 20px;
+                    background: ${type === 'error' ? '#8B4513' : '#4A6741'};
+                    color: white;
+                    padding: 1rem;
+                    border-radius: 8px;
+                    z-index: 10000;
+                    max-width: 300px;
+                    transform: translateX(100%);
+                    transition: transform 0.3s ease;
+                `;
+                notification.textContent = message;
+                
+                document.body.appendChild(notification);
+                
+                setTimeout(() => {
+                    notification.style.transform = 'translateX(0)';
+                }, 100);
+                
+                setTimeout(() => {
+                    notification.style.transform = 'translateX(100%)';
+                    setTimeout(() => notification.remove(), 300);
+                }, 3000);
+            }
+        }
+
+        // Initialize community hub when page loads
+        document.addEventListener('DOMContentLoaded', () => {
+            window.communityHub = new CommunityHub();
+        });
+    </script>
+</body>
+</html>

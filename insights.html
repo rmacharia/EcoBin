@@ -1,0 +1,1017 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Insights - EcoBin</title>
+    <meta name="description" content="AI-powered environmental impact analysis and personalized waste reduction recommendations.">
+    
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Tiempos+Headline:wght@400;500;700&family=Suisse+Int'l:wght@300;400;500;600&display=swap" rel="stylesheet">
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Core Libraries -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/echarts/5.4.0/echarts.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/typed.js/2.0.12/typed.min.js"></script>
+    
+    <style>
+        :root {
+            --color-primary: #2D5A3D;
+            --color-secondary: #8B6914;
+            --color-background: #FFFFFF;
+            --color-text: #3A3A3A;
+            --color-accent: #6B8CAE;
+            --color-success: #4A6741;
+            --color-warning: #B8860B;
+            --color-error: #8B4513;
+            --font-primary: 'Tiempos Headline', serif;
+            --font-secondary: 'Suisse Int\'l', sans-serif;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: var(--font-secondary);
+            background-color: var(--color-background);
+            color: var(--color-text);
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        .font-primary {
+            font-family: var(--font-primary);
+        }
+
+        .text-primary {
+            color: var(--color-primary);
+        }
+
+        .bg-primary {
+            background-color: var(--color-primary);
+        }
+
+        .text-secondary {
+            color: var(--color-secondary);
+        }
+
+        .bg-secondary {
+            background-color: var(--color-secondary);
+        }
+
+        /* Navigation */
+        .navbar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            z-index: 1000;
+            padding: 1rem 0;
+            border-bottom: 1px solid rgba(45, 90, 61, 0.1);
+        }
+
+        .nav-link {
+            position: relative;
+            transition: all 0.3s ease;
+        }
+
+        .nav-link:hover {
+            color: var(--color-primary);
+        }
+
+        .nav-link.active::after {
+            content: '';
+            position: absolute;
+            bottom: -4px;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: var(--color-primary);
+        }
+
+        /* Main Content */
+        .main-content {
+            padding-top: 80px;
+            min-height: 100vh;
+            padding-bottom: 5rem;
+        }
+
+        /* Insights Dashboard */
+        .insights-header {
+            background: linear-gradient(135deg, rgba(45, 90, 61, 0.1), rgba(139, 105, 20, 0.1));
+            border-radius: 12px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            text-align: center;
+        }
+
+        .insights-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .insight-card {
+            background: white;
+            border-radius: 12px;
+            padding: 2rem;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            border: 1px solid rgba(45, 90, 61, 0.1);
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+
+        .insight-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+        }
+
+        .insight-icon {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+        }
+
+        .insight-number {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--color-primary);
+            margin-bottom: 0.5rem;
+        }
+
+        .insight-label {
+            font-size: 1rem;
+            opacity: 0.8;
+            margin-bottom: 0.5rem;
+        }
+
+        .insight-change {
+            font-size: 0.875rem;
+            font-weight: 500;
+        }
+
+        .insight-change.positive {
+            color: var(--color-success);
+        }
+
+        .insight-change.negative {
+            color: var(--color-error);
+        }
+
+        /* Chart Containers */
+        .chart-container {
+            background: white;
+            border-radius: 12px;
+            padding: 2rem;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            border: 1px solid rgba(45, 90, 61, 0.1);
+            margin-bottom: 2rem;
+        }
+
+        .chart-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: var(--color-primary);
+            margin-bottom: 1rem;
+        }
+
+        .chart {
+            height: 400px;
+        }
+
+        /* AI Recommendations */
+        .recommendations {
+            background: white;
+            border-radius: 12px;
+            padding: 2rem;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            border: 1px solid rgba(45, 90, 61, 0.1);
+            margin-bottom: 2rem;
+        }
+
+        .recommendation-item {
+            display: flex;
+            align-items: start;
+            gap: 1rem;
+            padding: 1.5rem;
+            border-bottom: 1px solid rgba(45, 90, 61, 0.1);
+            transition: all 0.3s ease;
+        }
+
+        .recommendation-item:hover {
+            background: rgba(45, 90, 61, 0.05);
+        }
+
+        .recommendation-item:last-child {
+            border-bottom: none;
+        }
+
+        .recommendation-icon {
+            font-size: 2rem;
+            flex-shrink: 0;
+        }
+
+        .recommendation-content {
+            flex: 1;
+        }
+
+        .recommendation-title {
+            font-weight: 600;
+            color: var(--color-primary);
+            margin-bottom: 0.5rem;
+        }
+
+        .recommendation-description {
+            opacity: 0.8;
+            margin-bottom: 1rem;
+        }
+
+        .recommendation-impact {
+            font-size: 0.875rem;
+            color: var(--color-success);
+            font-weight: 500;
+        }
+
+        .recommendation-actions {
+            display: flex;
+            gap: 0.5rem;
+            margin-top: 1rem;
+        }
+
+        .action-btn {
+            padding: 0.5rem 1rem;
+            border: 1px solid var(--color-primary);
+            border-radius: 6px;
+            background: transparent;
+            color: var(--color-primary);
+            font-size: 0.875rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .action-btn:hover {
+            background: var(--color-primary);
+            color: white;
+        }
+
+        /* Predictive Analytics */
+        .prediction-card {
+            background: linear-gradient(135deg, rgba(107, 140, 174, 0.1), rgba(45, 90, 61, 0.1));
+            border-radius: 12px;
+            padding: 2rem;
+            border: 1px solid rgba(107, 140, 174, 0.2);
+            margin-bottom: 2rem;
+        }
+
+        .prediction-header {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .prediction-icon {
+            font-size: 2rem;
+        }
+
+        .prediction-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: var(--color-primary);
+        }
+
+        .prediction-content {
+            background: white;
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin-top: 1rem;
+        }
+
+        .prediction-chart {
+            height: 200px;
+            margin-top: 1rem;
+        }
+
+        /* Time Range Selector */
+        .time-selector {
+            display: flex;
+            gap: 0.5rem;
+            margin-bottom: 2rem;
+            background: rgba(45, 90, 61, 0.1);
+            border-radius: 8px;
+            padding: 0.25rem;
+        }
+
+        .time-option {
+            padding: 0.5rem 1rem;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 0.875rem;
+            font-weight: 500;
+        }
+
+        .time-option:hover {
+            background: rgba(45, 90, 61, 0.1);
+        }
+
+        .time-option.active {
+            background: var(--color-primary);
+            color: white;
+        }
+
+        /* Bottom Navigation */
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: white;
+            border-top: 1px solid rgba(45, 90, 61, 0.1);
+            padding: 0.5rem 0;
+            z-index: 1000;
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+        }
+
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 0.5rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            color: var(--color-text);
+        }
+
+        .nav-item:hover {
+            color: var(--color-primary);
+        }
+
+        .nav-item.active {
+            color: var(--color-primary);
+        }
+
+        .nav-icon {
+            font-size: 1.25rem;
+            margin-bottom: 0.25rem;
+        }
+
+        .nav-label {
+            font-size: 0.75rem;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .insights-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .chart {
+                height: 300px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="max-w-6xl mx-auto px-4 flex items-center justify-between">
+            <div class="font-primary text-2xl font-bold text-primary">
+                EcoBin
+            </div>
+            
+            <div class="hidden md:flex items-center space-x-8">
+                <a href="index.html" class="nav-link" data-nav="index">Dashboard</a>
+                <a href="track.html" class="nav-link" data-nav="track">Track Waste</a>
+                <a href="#" class="nav-link active" data-nav="insights">Insights</a>
+                <a href="community.html" class="nav-link" data-nav="community">Community</a>
+            </div>
+            
+            <div class="flex items-center space-x-4">
+                <div class="connection-status online text-sm">
+                    Online
+                </div>
+                <button class="btn-primary" onclick="window.insightsAnalyzer?.generateNewInsights()">
+                    🔄 Refresh Insights
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <div class="max-w-6xl mx-auto px-4 py-8">
+            <!-- Insights Header -->
+            <div class="insights-header">
+                <h1 class="font-primary text-4xl font-bold text-primary mb-4">
+                    AI Environmental Insights
+                </h1>
+                <p class="text-xl opacity-80">
+                    Personalized analytics and recommendations to optimize your environmental impact.
+                </p>
+                <div class="time-selector mt-6">
+                    <div class="time-option active" data-range="week">This Week</div>
+                    <div class="time-option" data-range="month">This Month</div>
+                    <div class="time-option" data-range="year">This Year</div>
+                    <div class="time-option" data-range="all">All Time</div>
+                </div>
+            </div>
+
+            <!-- Key Metrics -->
+            <div class="insights-grid">
+                <div class="insight-card">
+                    <div class="insight-icon">🌱</div>
+                    <div class="insight-number" id="carbon-saved">127</div>
+                    <div class="insight-label">kg CO₂ Saved</div>
+                    <div class="insight-change positive">+15% this month</div>
+                </div>
+                
+                <div class="insight-card">
+                    <div class="insight-icon">♻️</div>
+                    <div class="insight-number" id="recycling-rate">89</div>
+                    <div class="insight-label">% Recycling Rate</div>
+                    <div class="insight-change positive">+5% this month</div>
+                </div>
+                
+                <div class="insight-card">
+                    <div class="insight-icon">🌳</div>
+                    <div class="insight-number" id="trees-equivalent">6</div>
+                    <div class="insight-label">Trees Equivalent</div>
+                    <div class="insight-change positive">+2 this month</div>
+                </div>
+                
+                <div class="insight-card">
+                    <div class="insight-icon">💧</div>
+                    <div class="insight-number" id="water-saved">2340</div>
+                    <div class="insight-label">Liters Water Saved</div>
+                    <div class="insight-change positive">+340L this month</div>
+                </div>
+            </div>
+
+            <!-- Waste Pattern Analysis -->
+            <div class="chart-container">
+                <div class="chart-title">Waste Generation Patterns</div>
+                <div id="waste-patterns-chart" class="chart"></div>
+            </div>
+
+            <!-- Category Breakdown -->
+            <div class="chart-container">
+                <div class="chart-title">Waste Category Breakdown</div>
+                <div id="category-breakdown-chart" class="chart"></div>
+            </div>
+
+            <!-- Predictive Analytics -->
+            <div class="prediction-card">
+                <div class="prediction-header">
+                    <div class="prediction-icon">🔮</div>
+                    <div class="prediction-title">AI Predictions</div>
+                </div>
+                <p class="opacity-80 mb-4">
+                    Based on your waste patterns, here are predictions and recommendations for the next month.
+                </p>
+                
+                <div class="prediction-content">
+                    <h4 class="font-semibold mb-2">Predicted Waste Generation</h4>
+                    <p class="opacity-80 mb-4">
+                        Your current patterns suggest you'll generate approximately 45kg of waste next month. 
+                        With optimized recycling, you could reduce this to 38kg and save an additional 12kg of CO₂.
+                    </p>
+                    <div id="prediction-chart" class="prediction-chart"></div>
+                </div>
+            </div>
+
+            <!-- AI Recommendations -->
+            <div class="recommendations">
+                <h2 class="font-primary text-2xl font-bold text-primary mb-4">
+                    Personalized Recommendations
+                </h2>
+                <p class="opacity-80 mb-6">
+                    Based on your waste patterns and community data, here are tailored suggestions to improve your environmental impact.
+                </p>
+
+                <div class="recommendation-item">
+                    <div class="recommendation-icon">🥤</div>
+                    <div class="recommendation-content">
+                        <div class="recommendation-title">Reduce Single-Use Plastics</div>
+                        <div class="recommendation-description">
+                            You've logged 23 plastic items this month. Consider switching to reusable alternatives like water bottles, food containers, and shopping bags.
+                        </div>
+                        <div class="recommendation-impact">
+                            💡 Potential Impact: 3.5kg CO₂ reduction monthly
+                        </div>
+                        <div class="recommendation-actions">
+                            <button class="action-btn" onclick="window.insightsAnalyzer?.implementRecommendation('plastic-reduction')">
+                                Get Tips
+                            </button>
+                            <button class="action-btn" onclick="window.insightsAnalyzer?.setReminder('plastic-alternatives')">
+                                Set Reminder
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="recommendation-item">
+                    <div class="recommendation-icon">🥬</div>
+                    <div class="recommendation-content">
+                        <div class="recommendation-title">Optimize Food Waste Management</div>
+                        <div class="recommendation-description">
+                            Your organic waste has increased by 30% this month. Start composting or use a food waste reduction app to minimize spoilage.
+                        </div>
+                        <div class="recommendation-impact">
+                            💡 Potential Impact: 2.8kg CO₂ reduction monthly
+                        </div>
+                        <div class="recommendation-actions">
+                            <button class="action-btn" onclick="window.insightsAnalyzer?.implementRecommendation('food-waste')">
+                                Learn More
+                            </button>
+                            <button class="action-btn" onclick="window.insightsAnalyzer?.findCompostingCenters()">
+                                Find Centers
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="recommendation-item">
+                    <div class="recommendation-icon">🏆</div>
+                    <div class="recommendation-content">
+                        <div class="recommendation-title">Join Community Challenge</div>
+                        <div class="recommendation-description">
+                            The "Zero Waste Week" challenge starts next Monday. Join 156 participants to reduce waste together and earn bonus points.
+                        </div>
+                        <div class="recommendation-impact">
+                            💡 Potential Impact: 5.2kg CO₂ reduction weekly
+                        </div>
+                        <div class="recommendation-actions">
+                            <button class="action-btn" onclick="window.insightsAnalyzer?.joinChallenge('zero-waste-week')">
+                                Join Challenge
+                            </button>
+                            <button class="action-btn" onclick="window.insightsAnalyzer?.viewChallengeDetails()">
+                                View Details
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="recommendation-item">
+                    <div class="recommendation-icon">📱</div>
+                    <div class="recommendation-content">
+                        <div class="recommendation-title">Improve Waste Sorting Accuracy</div>
+                        <div class="recommendation-description">
+                            Your sorting accuracy is 89%, above the community average of 76%. Use the AI camera feature more often to reach 95% accuracy.
+                        </div>
+                        <div class="recommendation-impact">
+                            💡 Potential Impact: 1.5kg CO₂ reduction monthly
+                        </div>
+                        <div class="recommendation-actions">
+                            <button class="action-btn" onclick="window.location.href='track.html'">
+                                Use AI Camera
+                            </button>
+                            <button class="action-btn" onclick="window.insightsAnalyzer?.viewSortingGuide()">
+                                View Guide
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bottom Navigation -->
+    <nav class="bottom-nav">
+        <a href="index.html" class="nav-item">
+            <div class="nav-icon">🏠</div>
+            <div class="nav-label">Dashboard</div>
+        </a>
+        <a href="track.html" class="nav-item">
+            <div class="nav-icon">📝</div>
+            <div class="nav-label">Track</div>
+        </a>
+        <a href="#" class="nav-item active">
+            <div class="nav-icon">📊</div>
+            <div class="nav-label">Insights</div>
+        </a>
+        <a href="community.html" class="nav-item">
+            <div class="nav-icon">🌍</div>
+            <div class="nav-label">Community</div>
+        </a>
+    </nav>
+
+    <!-- Load Main Application -->
+    <script src="app.js"></script>
+    
+    <script>
+        class InsightsAnalyzer {
+            constructor() {
+                this.currentTimeRange = 'week';
+                this.init();
+            }
+
+            init() {
+                this.setupEventListeners();
+                this.initializeCharts();
+                this.loadInsights();
+            }
+
+            setupEventListeners() {
+                // Time range selector
+                document.querySelectorAll('.time-option').forEach(option => {
+                    option.addEventListener('click', (e) => {
+                        this.changeTimeRange(e.target.dataset.range);
+                    });
+                });
+            }
+
+            changeTimeRange(range) {
+                // Update active state
+                document.querySelectorAll('.time-option').forEach(opt => {
+                    opt.classList.remove('active');
+                });
+                document.querySelector(`[data-range="${range}"]`).classList.add('active');
+                
+                this.currentTimeRange = range;
+                this.updateInsights(range);
+            }
+
+            async updateInsights(timeRange) {
+                try {
+                    // Simulate API call delay
+                    await new Promise(resolve => setTimeout(resolve, 500));
+                    
+                    // Update metrics based on time range
+                    const metrics = this.getMetricsForTimeRange(timeRange);
+                    this.updateMetrics(metrics);
+                    
+                    // Update charts
+                    this.updateCharts(timeRange);
+                    
+                    this.showNotification(`Insights updated for ${timeRange}`, 'success');
+                    
+                } catch (error) {
+                    console.error('Failed to update insights:', error);
+                    this.showNotification('Failed to update insights', 'error');
+                }
+            }
+
+            getMetricsForTimeRange(timeRange) {
+                const metrics = {
+                    week: {
+                        carbonSaved: 32,
+                        recyclingRate: 89,
+                        treesEquivalent: 1.5,
+                        waterSaved: 580
+                    },
+                    month: {
+                        carbonSaved: 127,
+                        recyclingRate: 89,
+                        treesEquivalent: 6,
+                        waterSaved: 2340
+                    },
+                    year: {
+                        carbonSaved: 1450,
+                        recyclingRate: 87,
+                        treesEquivalent: 72,
+                        waterSaved: 28400
+                    },
+                    all: {
+                        carbonSaved: 2100,
+                        recyclingRate: 86,
+                        treesEquivalent: 105,
+                        waterSaved: 42100
+                    }
+                };
+                
+                return metrics[timeRange] || metrics.month;
+            }
+
+            updateMetrics(metrics) {
+                document.getElementById('carbon-saved').textContent = metrics.carbonSaved;
+                document.getElementById('recycling-rate').textContent = metrics.recyclingRate;
+                document.getElementById('trees-equivalent').textContent = metrics.treesEquivalent;
+                document.getElementById('water-saved').textContent = metrics.waterSaved.toLocaleString();
+            }
+
+            initializeCharts() {
+                this.initWastePatternsChart();
+                this.initCategoryBreakdownChart();
+                this.initPredictionChart();
+            }
+
+            initWastePatternsChart() {
+                const container = document.getElementById('waste-patterns-chart');
+                if (!container || typeof echarts === 'undefined') return;
+
+                const chart = echarts.init(container);
+                
+                const option = {
+                    tooltip: {
+                        trigger: 'axis',
+                        axisPointer: {
+                            type: 'cross'
+                        }
+                    },
+                    legend: {
+                        data: ['Waste Generated (kg)', 'Recycled (kg)', 'CO₂ Saved (kg)'],
+                        bottom: 10
+                    },
+                    xAxis: {
+                        type: 'category',
+                        data: ['Week 1', 'Week 2', 'Week 3', 'Week 4']
+                    },
+                    yAxis: [
+                        {
+                            type: 'value',
+                            name: 'Weight (kg)',
+                            position: 'left'
+                        },
+                        {
+                            type: 'value',
+                            name: 'CO₂ Saved (kg)',
+                            position: 'right'
+                        }
+                    ],
+                    series: [
+                        {
+                            name: 'Waste Generated (kg)',
+                            type: 'bar',
+                            data: [12, 15, 18, 14],
+                            itemStyle: { color: '#8B6914' }
+                        },
+                        {
+                            name: 'Recycled (kg)',
+                            type: 'bar',
+                            data: [10, 13, 16, 12],
+                            itemStyle: { color: '#6B8CAE' }
+                        },
+                        {
+                            name: 'CO₂ Saved (kg)',
+                            type: 'line',
+                            yAxisIndex: 1,
+                            data: [8, 12, 15, 11],
+                            itemStyle: { color: '#2D5A3D' },
+                            smooth: true
+                        }
+                    ]
+                };
+                
+                chart.setOption(option);
+                this.wastePatternsChart = chart;
+            }
+
+            initCategoryBreakdownChart() {
+                const container = document.getElementById('category-breakdown-chart');
+                if (!container || typeof echarts === 'undefined') return;
+
+                const chart = echarts.init(container);
+                
+                const option = {
+                    tooltip: {
+                        trigger: 'item',
+                        formatter: '{a} <br/>{b}: {c}kg ({d}%)'
+                    },
+                    legend: {
+                        orient: 'vertical',
+                        left: 'left',
+                        data: ['Organic', 'Plastic', 'Paper', 'Metal', 'Glass', 'Electronic']
+                    },
+                    series: [
+                        {
+                            name: 'Waste Categories',
+                            type: 'pie',
+                            radius: ['40%', '70%'],
+                            center: ['60%', '50%'],
+                            data: [
+                                { value: 45, name: 'Organic', itemStyle: { color: '#4A6741' } },
+                                { value: 32, name: 'Plastic', itemStyle: { color: '#6B8CAE' } },
+                                { value: 28, name: 'Paper', itemStyle: { color: '#B8860B' } },
+                                { value: 15, name: 'Metal', itemStyle: { color: '#8B6914' } },
+                                { value: 12, name: 'Glass', itemStyle: { color: '#C4A484' } },
+                                { value: 8, name: 'Electronic', itemStyle: { color: '#2D5A3D' } }
+                            ],
+                            emphasis: {
+                                itemStyle: {
+                                    shadowBlur: 10,
+                                    shadowOffsetX: 0,
+                                    shadowColor: 'rgba(0, 0, 0, 0.5)'
+                                }
+                            }
+                        }
+                    ]
+                };
+                
+                chart.setOption(option);
+                this.categoryBreakdownChart = chart;
+            }
+
+            initPredictionChart() {
+                const container = document.getElementById('prediction-chart');
+                if (!container || typeof echarts === 'undefined') return;
+
+                const chart = echarts.init(container);
+                
+                const option = {
+                    tooltip: {
+                        trigger: 'axis'
+                    },
+                    legend: {
+                        data: ['Current Trend', 'With Optimizations'],
+                        bottom: 5
+                    },
+                    xAxis: {
+                        type: 'category',
+                        data: ['Week 1', 'Week 2', 'Week 3', 'Week 4']
+                    },
+                    yAxis: {
+                        type: 'value',
+                        name: 'Waste (kg)'
+                    },
+                    series: [
+                        {
+                            name: 'Current Trend',
+                            type: 'line',
+                            data: [12, 14, 16, 18],
+                            itemStyle: { color: '#8B6914' },
+                            smooth: true,
+                            lineStyle: { type: 'dashed' }
+                        },
+                        {
+                            name: 'With Optimizations',
+                            type: 'line',
+                            data: [12, 13, 14, 15],
+                            itemStyle: { color: '#4A6741' },
+                            smooth: true
+                        }
+                    ]
+                };
+                
+                chart.setOption(option);
+                this.predictionChart = chart;
+            }
+
+            updateCharts(timeRange) {
+                // Update charts based on time range
+                if (this.wastePatternsChart) {
+                    // Simulate different data for different time ranges
+                    const patterns = this.getWastePatternsData(timeRange);
+                    this.wastePatternsChart.setOption({
+                        xAxis: { data: patterns.labels },
+                        series: [
+                            { data: patterns.generated },
+                            { data: patterns.recycled },
+                            { data: patterns.carbonSaved }
+                        ]
+                    });
+                }
+            }
+
+            getWastePatternsData(timeRange) {
+                const data = {
+                    week: {
+                        labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+                        generated: [2, 3, 2.5, 4, 3.5, 5, 4.5],
+                        recycled: [1.8, 2.7, 2.2, 3.6, 3.1, 4.2, 3.8],
+                        carbonSaved: [1.2, 1.8, 1.5, 2.4, 2.1, 2.8, 2.5]
+                    },
+                    month: {
+                        labels: ['Week 1', 'Week 2', 'Week 3', 'Week 4'],
+                        generated: [12, 15, 18, 14],
+                        recycled: [10, 13, 16, 12],
+                        carbonSaved: [8, 12, 15, 11]
+                    },
+                    year: {
+                        labels: ['Q1', 'Q2', 'Q3', 'Q4'],
+                        generated: [45, 52, 48, 41],
+                        recycled: [38, 44, 41, 35],
+                        carbonSaved: [32, 38, 35, 30]
+                    }
+                };
+                
+                return data[timeRange] || data.month;
+            }
+
+            async generateNewInsights() {
+                this.showNotification('Generating new insights...', 'info');
+                
+                // Simulate AI processing
+                await new Promise(resolve => setTimeout(resolve, 2000));
+                
+                // Update recommendations
+                this.updateRecommendations();
+                
+                this.showNotification('New insights generated!', 'success');
+            }
+
+            updateRecommendations() {
+                // Simulate getting new recommendations from AI
+                const recommendations = [
+                    {
+                        icon: '🛒',
+                        title: 'Smart Shopping Habits',
+                        description: 'Plan your grocery shopping to reduce food waste by 25%. Buy only what you need and choose products with minimal packaging.',
+                        impact: '4.2kg CO₂ reduction monthly'
+                    },
+                    {
+                        icon: '🏠',
+                        title: 'Home Composting Setup',
+                        description: 'Start a small composting system for your organic waste. It\'s easier than you think and greatly reduces methane emissions.',
+                        impact: '2.8kg CO₂ reduction monthly'
+                    }
+                ];
+                
+                // This would update the recommendations section with new content
+                console.log('New recommendations:', recommendations);
+            }
+
+            implementRecommendation(type) {
+                this.showNotification(`Implementing ${type} recommendations...`, 'info');
+                // Simulate implementation
+                setTimeout(() => {
+                    this.showNotification(`${type} tips added to your dashboard!`, 'success');
+                }, 1000);
+            }
+
+            setReminder(type) {
+                this.showNotification(`Reminder set for ${type}`, 'success');
+            }
+
+            joinChallenge(challengeId) {
+                this.showNotification(`Joined ${challengeId} challenge!`, 'success');
+            }
+
+            findCompostingCenters() {
+                this.showNotification('Finding nearby composting centers...', 'info');
+            }
+
+            viewSortingGuide() {
+                this.showNotification('Opening waste sorting guide...', 'info');
+            }
+
+            viewChallengeDetails() {
+                this.showNotification('Loading challenge details...', 'info');
+            }
+
+            loadInsights() {
+                // Initialize with current data
+                this.updateInsights(this.currentTimeRange);
+            }
+
+            showNotification(message, type = 'info') {
+                const notification = document.createElement('div');
+                notification.style.cssText = `
+                    position: fixed;
+                    top: 100px;
+                    right: 20px;
+                    background: ${type === 'error' ? '#8B4513' : '#4A6741'};
+                    color: white;
+                    padding: 1rem;
+                    border-radius: 8px;
+                    z-index: 10000;
+                    max-width: 300px;
+                    transform: translateX(100%);
+                    transition: transform 0.3s ease;
+                `;
+                notification.textContent = message;
+                
+                document.body.appendChild(notification);
+                
+                setTimeout(() => {
+                    notification.style.transform = 'translateX(0)';
+                }, 100);
+                
+                setTimeout(() => {
+                    notification.style.transform = 'translateX(100%)';
+                    setTimeout(() => notification.remove(), 300);
+                }, 3000);
+            }
+        }
+
+        // Initialize insights analyzer when page loads
+        document.addEventListener('DOMContentLoaded', () => {
+            window.insightsAnalyzer = new InsightsAnalyzer();
+            
+            // Handle window resize for charts
+            window.addEventListener('resize', () => {
+                if (window.insightsAnalyzer.wastePatternsChart) {
+                    window.insightsAnalyzer.wastePatternsChart.resize();
+                }
+                if (window.insightsAnalyzer.categoryBreakdownChart) {
+                    window.insightsAnalyzer.categoryBreakdownChart.resize();
+                }
+                if (window.insightsAnalyzer.predictionChart) {
+                    window.insightsAnalyzer.predictionChart.resize();
+                }
+            });
+        });
+    </script>
+</body>
+</html>
